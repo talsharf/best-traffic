@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Interval Analyzer - Optimize Your Commute</title>
+  <meta name="description" content="Calculate and visualize future route travel times at intervals using Google traffic data. Find the absolute best time to start your drive.">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="glass-panel">
+      <div class="logo-section">
+        <h1>Traffic Interval Analyzer</h1>
+        <p>Zero-cost, private commute optimization dashboard</p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-open-billing" class="btn btn-secondary" title="View Google Cloud Billing status">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 4px;">
+            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
+          </svg>
+          Spend: <span id="header-spend-amount" style="font-weight:700;">$0.00</span>
+        </button>
+        <button id="btn-toggle-history" class="btn btn-secondary" title="View historical runs">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.15-.989c.383.058.75.16 1.097.3l-.262.988zM12 2.686a7.008 7.008 0 0 0-.776-.467l.422-.906c.306.142.593.313.857.51L12 2.686zM13.81 4H12.65a6.975 6.975 0 0 0-.535-.747l.76-.65c.243.284.457.59.636.914l-.701.483zm.88 2.044h-1.17c-.07-.323-.178-.633-.321-.922l.91-.537c.214.363.385.748.508 1.15l-.927.309zM15 8c0 .244-.012.484-.037.72l-.997-.08a6.97 6.97 0 0 0 0-1.28l.997-.08c.025.236.037.476.037.72zm-.11 2.044-.927-.309c-.123.402-.294.787-.508 1.15l.91.537c.143-.289.25-.6.32-.922l.205-.056zm-.88 2.044-.701-.483c-.179.324-.393.63-.636.914l.76.65a8.03 8.03 0 0 0 .857-.51l-.28-.571zm-1.2 1.226a7.01 7.01 0 0 0 .776-.467l.422.906c-.264.197-.551.368-.857.51l-.341-.949zM10.519 14.53a7.003 7.003 0 0 0 .985-.299l.15.989c-.347.14-.714.242-1.097.3l-.038-.99zm-2.004.45a7 7 0 0 0 .515-.019l.074.997a8.04 8.04 0 0 1-.589.022v-1zM6 15a8 8 0 0 1-1.097-.076l.15-.989c.299.046.602.065.947.065v1zm-2.044-.88a8.03 8.03 0 0 1-.857-.51l.422-.906c.246.185.506.342.776.467l-.341.949zm-2.044-.88a7.99 7.99 0 0 1-.636-.914l.76-.65c.179.24.393.454.636.636l-.76.928zm-.88-2.044a6.975 6.975 0 0 0 .32-.922l.91.537c-.143.289-.251.599-.32.922l-.91-.537zm-.032-2.044H1c0-.244.012-.484.037-.72l.997.08a6.97 6.97 0 0 0 0 1.28l-.997.08A7.778 7.778 0 0 1 1 8zm.11-2.044.927.309c.123-.402.294-.787.508-1.15l-.91-.537c-.143.289-.25.6-.32.922l-.205.056zm.88-2.044.701.483c.179-.324.393-.63.636-.914l-.76-.65a8.03 8.03 0 0 0-.857.51l.28.571zm1.2-1.226c.246-.185.506-.342.776-.467l-.422-.906c-.306.142-.593.313-.857.51l.503.863zm2.044-.88a7.003 7.003 0 0 0-.985.299l-.15-.989c.347-.14.714-.242 1.097-.3l.038.99z"/>
+            <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+            <path d="M8 4.5a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3.5a.5.5 0 0 1-.5-.5V5a.5.5 0 0 1 .5-.5z"/>
+          </svg>
+          Saved Reports
+        </button>
+        <button id="btn-open-settings" class="btn btn-secondary" title="Configure Google API Key">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+          </svg>
+          Google Key
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Grid -->
+    <main class="dashboard-grid">
+      <!-- Left Column: Controls -->
+      <section class="glass-panel control-panel">
+        <h2>Report Setup</h2>
+        
+        <form id="analyzer-form" onsubmit="return false;">
+          <!-- Addresses -->
+          <div class="form-group">
+            <label for="start-address">Start Address</label>
+            <input type="text" id="start-address" placeholder="Type starting location..." required autocomplete="off">
+          </div>
+          
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="end-address">Destination</label>
+            <input type="text" id="end-address" placeholder="Type destination..." required autocomplete="off">
+          </div>
+
+          <!-- Date Selector -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="date-select">Future Date</label>
+            <input type="date" id="date-select" required>
+          </div>
+
+          <!-- Time Window -->
+          <div class="form-row" style="margin-top: 12px;">
+            <div class="form-group">
+              <label for="start-time">Start Time</label>
+              <select id="start-time" required>
+                <!-- Generated by JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="end-time">End Time</label>
+              <select id="end-time" required>
+                <!-- Generated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Interval -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="interval-select">Check Interval</label>
+            <select id="interval-select" required>
+              <option value="15">Every 15 minutes</option>
+              <option value="30" selected>Every 30 minutes</option>
+              <option value="60">Every 60 minutes</option>
+            </select>
+          </div>
+
+          <!-- Cost Calculator Display -->
+          <div class="form-group" style="margin-top: 16px;">
+            <div class="cost-display">
+              <span>Google API Cost Estimate:</span>
+              <span id="estimated-cost">$0.00 (0 queries)</span>
+            </div>
+          </div>
+
+          <!-- Quota Exceeded Inline Warning Alert -->
+          <div id="quota-lock-alert" class="form-group hidden" style="margin-top: 12px;">
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.3); padding: 12px; border-radius: var(--radius-md); font-size: 13px; color: var(--danger); text-align: center; font-weight: 600;">
+              Budget Limit Reached! Report generation is locked. Adjust settings to resume.
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button type="submit" id="btn-generate" class="btn btn-primary" style="width: 100%; margin-top: 18px;">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 4px;">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M11.5 8a.5.5 0 0 1-.5.5H8.5V11a.5.5 0 0 1-1 0V8.5H5a.5.5 0 0 1 0-1h2.5V5a.5.5 0 0 1 1 0v2.5H11a.5.5 0 0 1 .5.5z"/>
+            </svg>
+            Generate Report
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Map & Chart -->
+      <section class="content-area">
+        <!-- Interactive Map Panel -->
+        <div class="glass-panel map-panel">
+          <div id="map" class="map-container">
+            <!-- Overlay shown when API key is missing -->
+            <div id="map-overlay" class="map-setup-overlay">
+              <p>Google Maps requires an API Key to display interactive map routes and query traffic data.</p>
+              <button id="btn-setup-key-prompt" class="btn btn-primary">Enter Google API Key</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Chart Panel -->
+        <div class="glass-panel chart-panel">
+          <h3>
+            Travel Time Analysis
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dashed"></span>
+                <span>Standard (No Traffic)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background: var(--primary);"></span>
+                <span>In Traffic (Colored Severity)</span>
+              </div>
+            </div>
+          </h3>
+          <div class="chart-container">
+            <canvas id="analytics-chart"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Query Progress Overlay (placed inside main area or as a floating panel) -->
+    <div id="progress-panel" class="progress-overlay">
+      <div class="spinner"></div>
+      <div class="progress-info">
+        <h3 class="progress-title" id="progress-title">Fetching Commute Windows</h3>
+        <p class="progress-subtitle" id="progress-status">Preparing loop queue...</p>
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+      <button id="btn-cancel-generation" class="btn btn-secondary btn-danger">Cancel Operation</button>
+    </div>
+
+    <!-- API Key Settings Modal -->
+    <div id="modal-settings" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Google Maps API Credentials</h3>
+          <button id="btn-close-settings" class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Your Google Maps API key remains stored securely inside your browser's private local storage. No servers see your key.
+          </p>
+          <div class="form-group">
+            <label for="api-key-input">Google Maps API Key</label>
+            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+          </div>
+          <p style="font-size: 11px; color: var(--text-muted);">
+            Ensure your key has <strong>Maps JavaScript API</strong>, <strong>Places API</strong>, and <strong>Directions API</strong> enabled in your Google Cloud Console. To protect your budget, restrict the key to HTTP Referrers in Google Console.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-cancel-settings" class="btn btn-secondary">Cancel</button>
+          <button id="btn-save-settings" class="btn btn-primary">Save Key</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Status Modal -->
+    <div id="modal-billing" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Google Cloud Billing Monitor (Estimated)</h3>
+          <button id="btn-close-billing" class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Private, local estimation of Google Maps Platform API usage for the current calendar month.
+          </p>
+          
+          <!-- Spend progress bar -->
+          <div class="form-group">
+            <label>Estimated Spend vs Budget</label>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+              <span id="billing-current-spend">$0.00</span>
+              <span id="billing-budget-limit">$200.00</span>
+            </div>
+            <div class="progress-bar-container" style="width: 100%; height: 10px; margin-top: 0; background: rgba(255,255,255,0.05);">
+              <div id="billing-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Billing Stats Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+            <div class="glass-panel" style="padding: 12px; text-align: center; border-radius: var(--radius-md);">
+              <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Days Until Reset</div>
+              <div id="billing-days-remaining" style="font-size: 20px; font-weight: 700; color: var(--primary); margin-top: 4px;">--</div>
+            </div>
+            <div class="glass-panel" style="padding: 12px; text-align: center; border-radius: var(--radius-md);">
+              <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Remaining Budget</div>
+              <div id="billing-remaining-allowance" style="font-size: 20px; font-weight: 700; color: var(--success); margin-top: 4px;">--</div>
+            </div>
+          </div>
+
+          <!-- Itemized usage counts -->
+          <div style="margin-top: 8px;">
+            <label style="margin-bottom: 6px; display: block;">Usage Details (This Month)</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-secondary);">
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                <span>Map Loads ($0.007 each)</span>
+                <span id="count-map-loads" style="color: var(--text-primary); font-weight: 600;">0</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                <span>Autocomplete Searches ($0.017 each)</span>
+                <span id="count-autocomplete-sessions" style="color: var(--text-primary); font-weight: 600;">0</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                <span>Directions Queries ($0.010 each)</span>
+                <span id="count-directions-queries" style="color: var(--text-primary); font-weight: 600;">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom limit input -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="budget-limit-input">Custom Monthly Budget Limit ($)</label>
+            <input type="number" id="budget-limit-input" min="0.10" step="0.10" value="200.00">
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between; align-items: center;">
+          <button id="btn-reset-ledger" class="btn btn-secondary btn-danger" style="padding: 8px 14px; font-size: 12px;">Reset Ledger</button>
+          <div style="display: flex; gap: 12px;">
+            <button id="btn-cancel-billing" class="btn btn-secondary">Close</button>
+            <button id="btn-save-billing" class="btn btn-primary">Save Budget</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quota Exceeded Warning Modal -->
+    <div id="modal-quota-warning" class="modal-overlay">
+      <div class="modal-content" style="border-color: var(--danger);">
+        <div class="modal-header">
+          <h3 class="text-danger" style="display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+              <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+            </svg>
+            Budget Limit Exceeded
+          </h3>
+          <button id="btn-close-quota-warning" class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Your estimated Google Cloud Platform usage this month has reached or exceeded your configured safety budget limit.
+          </p>
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-md); padding: 16px; margin: 12px 0;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>Current Month Spend:</span>
+              <strong id="quota-warning-spent" class="text-danger">$0.00</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Budget Threshold:</span>
+              <strong id="quota-warning-limit">$0.00</strong>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-secondary);">
+            To prevent unexpected API charges, automated directions checks are **suspended**. You can resume checks by increasing your budget limit in the billing settings or resetting the ledger.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-quota-open-billing" class="btn btn-primary" style="width: 100%;">Adjust Budget Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Drawer (Slide-out) -->
+    <div id="history-overlay" class="drawer-overlay">
+      <aside class="drawer">
+        <div class="drawer-header">
+          <h3>Report History</h3>
+          <button id="btn-close-history" class="drawer-close">&times;</button>
+        </div>
+        <div id="history-list" class="drawer-body">
+          <!-- Loaded dynamically -->
+          <div class="history-empty">No reports saved yet. Generate a report to see it here!</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Main Application Entry Module -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

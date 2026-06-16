@@ -1,0 +1,12 @@
+# Node modules
+node_modules/
+
+# Playwright Test Outputs
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Local system files
+.DS_Store
+Thumbs.db
