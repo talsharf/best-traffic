@@ -16,7 +16,7 @@ test.describe('Traffic Interval Analyzer Dashboard', () => {
   test('should load the dashboard with correct title and elements', async ({ page }) => {
     // Check main title
     const title = page.locator('.logo-section h1');
-    await expect(title).toHaveText('Traffic Interval Analyzer');
+    await expect(title).toHaveText('Best Traffic: Find the best time to travel');
 
     // Check main control sections
     const setupHeader = page.locator('.control-panel h2');
