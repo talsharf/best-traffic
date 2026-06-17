@@ -47,7 +47,10 @@
     <main class="dashboard-grid">
       <!-- Left Column: Controls -->
       <section class="glass-panel control-panel">
-        <h2>Report Setup</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 8px;">
+          <h2 style="border-bottom: none; padding-bottom: 0; font-size: 18px; font-weight: 600; color: var(--text-primary);">Report Setup</h2>
+          <button type="button" id="btn-reset-ui" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px; height: 28px;" title="Clear form and map to start fresh">New</button>
+        </div>
         
         <form id="analyzer-form" onsubmit="return false;">
           <!-- Addresses -->

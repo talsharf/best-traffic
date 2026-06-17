@@ -210,6 +210,10 @@ function setupUIEventListeners() {
     }
   });
 
+  document.getElementById('btn-reset-ui').addEventListener('click', () => {
+    resetUIAndMap();
+  });
+
   // Analyzer Form Submit
   document.getElementById('analyzer-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -602,6 +606,48 @@ function clearCustomMapRoute() {
   if (directionsRenderer) {
     directionsRenderer.setDirections({ routes: [] });
   }
+}
+
+// Reset form inputs, map routes, and charts to start fresh
+function resetUIAndMap() {
+  // 1. Cancel active loop if running
+  if (isGenerating) {
+    isGenerating = false;
+    document.getElementById('progress-panel').classList.remove('active');
+  }
+
+  // 2. Clear inputs
+  document.getElementById('start-address').value = '';
+  document.getElementById('end-address').value = '';
+  
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('date-select').value = formatDateString(tomorrow);
+  
+  document.getElementById('start-time').value = '07:00';
+  document.getElementById('end-time').value = '10:00';
+  document.getElementById('interval-select').value = '30';
+  calculateCostEstimate();
+
+  // 3. Clear map polylines & markers
+  clearCustomMapRoute();
+  
+  // Center map back to default
+  if (map) {
+    map.setCenter({ lat: 40.7128, lng: -74.0060 });
+    map.setZoom(12);
+  }
+
+  // 4. Clear Chart data
+  if (chart) {
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
+    chart.data.datasets[1].data = [];
+    chart.update();
+  }
+
+  activeRunResults = [];
+  console.log("UI and map reset for new report.");
 }
 
 // Form Submission / Traffic Analyzer Queue Execution

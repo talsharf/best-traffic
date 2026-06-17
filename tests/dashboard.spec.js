@@ -116,4 +116,25 @@ test.describe('Traffic Interval Analyzer Dashboard', () => {
     await expect(generateBtn).toBeDisabled();
     await expect(alertBanner).toBeVisible();
   });
+
+  test('should clear the form when clicking the New button', async ({ page }) => {
+    const startInput = page.locator('#start-address');
+    const endInput = page.locator('#end-address');
+    const newBtn = page.locator('#btn-reset-ui');
+
+    // Type dummy addresses
+    await startInput.fill('Brooklyn, NY');
+    await endInput.fill('Manhattan, NY');
+    
+    // Check they have value
+    await expect(startInput).toHaveValue('Brooklyn, NY');
+    await expect(endInput).toHaveValue('Manhattan, NY');
+
+    // Click "New" button
+    await newBtn.click();
+
+    // Verify inputs are cleared
+    await expect(startInput).toHaveValue('');
+    await expect(endInput).toHaveValue('');
+  });
 });
